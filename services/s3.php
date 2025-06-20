@@ -1,8 +1,8 @@
 <?php
 
-namespace application\services\filemanager;
+namespace Filemanager\Services;
 
-use \engine\Service;
+use SplitPHP\Service;
 
 class S3 extends Service
 {

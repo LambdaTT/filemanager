@@ -1,10 +1,9 @@
 <?php
 
-namespace application\services\filemanager;
+namespace Filemanager\Services;
 
-use \engine\Service;
-use \engine\Helpers;
-use \Exception;
+use SplitPHP\Service;
+use SplitPHP\Helpers;
 
 class File extends Service
 {
