@@ -186,7 +186,7 @@ class Commands extends Cli
       // 1) Define metadata for each command
       $commands = [
         'files:list'   => [
-          'usage' => 'filamanager:files:list [--limit=<n>] [--sort-by=<field>] [--sort-direction=<dir>] [--page=<n>]',
+          'usage' => 'filemanager:files:list [--limit=<n>] [--sort-by=<field>] [--sort-direction=<dir>] [--page=<n>]',
           'desc'  => 'Page through existing files.',
           'flags' => [
             '--limit=<n>'          => 'Items per page (default 10)',
@@ -196,15 +196,15 @@ class Commands extends Cli
           ],
         ],
         'files:create' => [
-          'usage' => 'filamanager:files:create',
+          'usage' => 'filemanager:files:create',
           'desc'  => 'Interactively create a new file.',
         ],
         'files:remove' => [
-          'usage' => 'filamanager:files:remove',
+          'usage' => 'filemanager:files:remove',
           'desc'  => 'Delete a file by its ID.',
         ],
         'help'             => [
-          'usage' => 'filamanager:help',
+          'usage' => 'filemanager:help',
           'desc'  => 'Show this help screen.',
         ],
       ];
@@ -214,17 +214,17 @@ class Commands extends Cli
 
       $rows = [
         [
-          'cmd'  => 'filamanager:files:list',
+          'cmd'  => 'filemanager:files:list',
           'desc' => 'Page through existing files',
           'opts' => '--limit, --sort-by, --sort-direction, --page',
         ],
         [
-          'cmd'  => 'filamanager:files:create',
+          'cmd'  => 'filemanager:files:create',
           'desc' => 'Interactively create a new file',
           'opts' => '(no flags)',
         ],
         [
-          'cmd'  => 'filamanager:files:remove',
+          'cmd'  => 'filemanager:files:remove',
           'desc' => 'Delete a file by ID',
           'opts' => '(no flags)',
         ],
