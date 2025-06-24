@@ -19,8 +19,7 @@ class S3 extends Service
     $this->awsS3Region = getenv('AWS_REGION');
     $this->s3BucketName = getenv('AWS_S3_BUCKETNAME');
 
-    // require_once ROOT_PATH . '/vendors/amazon_s3_php_class/S3.php'; // O nome usado era diferente do path, estava dando erro
-    require_once ROOT_PATH . '/vendors/amazon-s3-php-class/S3.php';
+    require_once dirname(__DIR__) . '/vendor/amazon-s3-php-class/S3.php';
     $this->s3Class = new \S3($this->awsAccessKey, $this->awsSecretKey);
     $this->s3Class->setExceptions(true);
     $this->s3Class->setRegion($this->awsS3Region);

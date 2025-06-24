@@ -42,17 +42,15 @@ class File extends Service
    * @param   string  $external Optional. Pass 'Y' to save the content in S3.
    * @return  object 
    */
-  public function create(string $name, string $filepath, string $external = 'N')
+  public function add(string $name, string $filepath, string $external = 'N')
   {
     // Ensures the name is valid
     $name = $this->getService('utils/misc')->stringToSlug($name);
 
     $data = [];
-    $loggedUser = $this->getService('iam/session')->getLoggedUser();
 
     // Set default values
     $data['ds_key'] = "fle-" . uniqid();
-    $data['id_iam_user_created'] = empty($loggedUser) ? null : $loggedUser->id_iam_user;
     $data['ds_filename'] = $name;
     $data['do_external_storage'] = $external;
     $data['ds_content_type'] = $this->findMimeType($filepath);
