@@ -7,7 +7,7 @@ use SplitPHP\Database\DbVocab;
 
 class CreateTableFile extends Migration{
   public function apply(){
-     $this->Table('FMN_FILE')
+     $this->Table('FMN_FILE', 'File')
       ->id('id_fmn_file')
       ->string('ds_key', 17)
       ->datetime('dt_created')->setDefaultValue(DbVocab::SQL_CURTIMESTAMP())
