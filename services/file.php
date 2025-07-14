@@ -81,7 +81,7 @@ class File extends Service
       if ($item->do_external_storage === 'Y') {
         $found = $this->getService('filemanager/s3')->deleteObject("{$item->ds_key}_{$item->ds_filename}");
         if (!$found) {
-          Helpers::Log()->add("filemanager_s3", "file id {$item->id_fmn_file} could not be deleted");
+          Helpers::Log()->common("filemanager_s3", "file id {$item->id_fmn_file} could not be deleted");
           continue;
         }
       }

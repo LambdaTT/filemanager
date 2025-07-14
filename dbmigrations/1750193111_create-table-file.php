@@ -2,7 +2,7 @@
 
 namespace Filemanager\Migrations;
 
-use SplitPHP\DbMigrations\Migration;
+use SplitPHP\DbManager\Migration;
 use SplitPHP\Database\DbVocab;
 
 class CreateTableFile extends Migration{
