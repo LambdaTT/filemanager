@@ -12,7 +12,7 @@ class S3 extends Service
   private $s3BucketName;
   private $s3Class;
 
-  public function init()
+  public function init(): void
   {
     $this->awsAccessKey = getenv('AWS_KEY');
     $this->awsSecretKey = getenv('AWS_SECRET');
