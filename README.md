@@ -2,6 +2,7 @@
 
 A SplitPHP Framework plugin creates an abstraction layer to handle and manage file uploading.
 
+[![Packagist Version](https://img.shields.io/packagist/v/lambdatt-php/filemanager.svg)](https://packagist.org/packages/lambdatt-php/filemanager)
 ---
 
 ## Installation
