@@ -20,6 +20,7 @@ class CreateTableFileImport extends Migration
       ->int('id_fmn_file')
       ->Foreign('id_fmn_file')->references('id_fmn_file')->atTable('FMN_FILE')->onUpdate(DbVocab::FKACTION_CASCADE)->onDelete(DbVocab::FKACTION_CASCADE)
       ->text('tx_extradata')->nullable()->setDefaultValue(null)
-      ->string('do_status', 1)->setDefaultValue('P'); // P=pending, R=Running, D=Done, F=Failed, C=Cancelled
+      ->string('do_status', 1)->setDefaultValue('P') // P=pending, R=Running, D=Done, F=Failed, C=Cancelled
+      ->string('ds_failreason', 255)->nullable()->setDefaultValue(null);
   }
 }

@@ -42,6 +42,7 @@ class Import extends Service
 
     // Validation
     if (empty($_FILES['file_document'])) throw new BadRequest("Não há arquivo.");
+    if (!in_array($data['ds_type_tag'], $this->getTypeTags())) throw new BadRequest("Tipo de importação inválido.");
 
     // Set default values
     $data['ds_key'] = 'imp-' . uniqid();
@@ -103,6 +104,9 @@ class Import extends Service
       Dao::flush();
 
       try {
+        // Validations:
+        if (!in_array($import->ds_type_tag, $this->getTypeTags())) throw new BadRequest("Tipo de importação inválido.");
+
         $this->getService($import->ds_servicepath)->{$import->ds_servicemethod}($import);
         $this->getDao(self::TABLE)
           ->filter('id_fmn_file_import', $import->id_fmn_file_import)
@@ -110,9 +114,20 @@ class Import extends Service
       } catch (Throwable $exc) {
         $this->getDao(self::TABLE)
           ->filter('id_fmn_file_import', $import->id_fmn_file_import)
-          ->update(['do_status' => 'F']); // F=Failed
+          ->update([
+            'do_status' => 'F', // F=Failed
+            'ds_failreason' => $exc->getMessage()
+          ]);
       }
       Dao::flush();
     }
+  }
+
+  private function getTypeTags()
+  {
+    $types = $this->getDao('FMN_IMPORT_TYPE')
+      ->find();
+
+    return array_map(fn($t) => $t->ds_tag, $types);
   }
 }
