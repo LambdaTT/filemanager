@@ -11,6 +11,7 @@ SELECT
     CONCAT(usrc.ds_first_name, ' ', usrc.ds_last_name) as userCreated,
     fle.ds_filename,
     fle.ds_url as fileUrl,
+    fle.ds_content_type as fileMimeType,
     typ.ds_title as importType,
     typ.ds_servicepath,
     typ.ds_servicemethod

@@ -21,7 +21,6 @@ class File extends Service
       ->find();
   }
 
-
   /**
    * List first record in FMN_FILE, filtered by $params
    * @param   array  $params 
@@ -33,7 +32,6 @@ class File extends Service
       ->bindParams($params)
       ->first();
   }
-
 
   /**
    * Create a record in FMN_FILE
@@ -47,10 +45,15 @@ class File extends Service
     // Ensures the name is valid
     $name = $this->getService('utils/misc')->stringToSlug($name);
 
-    $data = [];
-
+    // Refs
+    $loggedUser = null;
+    if ($this->getService('modcontrol/control')->moduleExists('iam'))
+      $loggedUser = $this->getService('iam/session')->getLoggedUser();
+    
     // Set default values
+    $data = [];
     $data['ds_key'] = "fle-" . uniqid();
+    $data['id_iam_user_created'] = empty($loggedUser) ? null : $loggedUser->id_iam_user;
     $data['ds_filename'] = $name;
     $data['do_external_storage'] = $external;
     $data['ds_content_type'] = $this->findMimeType($filepath);
@@ -66,7 +69,6 @@ class File extends Service
     return $this->getDao(self::TABLE)->insert($data);
   }
 
-
   /**
    * Delete a record in FMN_FILE using filters specified in the array $params
    * @param   array  $data 
@@ -80,10 +82,8 @@ class File extends Service
     foreach ($data as $item) {
       if ($item->do_external_storage === 'Y') {
         $found = $this->getService('filemanager/s3')->deleteObject("{$item->ds_key}_{$item->ds_filename}");
-        if (!$found) {
-          Helpers::Log()->common("filemanager_s3", "file id {$item->id_fmn_file} could not be deleted");
-          continue;
-        }
+        if (!$found) 
+          Helpers::Log()->common("filemanager_s3", "file id {$item->id_fmn_file} could not be deleted from S3 storage.");
       }
       $affectedRows += $this->getDao(self::TABLE)->bindParams(['ds_key' => $item->ds_key])->delete();
     }
@@ -91,6 +91,11 @@ class File extends Service
     return $affectedRows;
   }
 
+  /**
+   * Find the MIME type of a file
+   * @param   string  $filepath
+   * @return  string
+   */
   private function findMimeType($filepath)
   {
     $finfo = finfo_open(FILEINFO_MIME_TYPE);

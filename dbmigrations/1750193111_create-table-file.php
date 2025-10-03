@@ -17,6 +17,5 @@ class CreateTableFile extends Migration{
       ->blob('bl_file')->nullable()->setDefaultValue(null)
       ->string('ds_content_type', 100)->nullable()->setDefaultValue(null)
       ->Index('KEY', DbVocab::IDX_UNIQUE)->onColumn('ds_key');
-
   }
 }

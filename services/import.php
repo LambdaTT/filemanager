@@ -11,6 +11,11 @@ class Import extends Service
 {
   const TABLE = "FMN_FILE_IMPORT";
 
+  /**
+   * List all records of importations, filtered by $params
+   * @param   array  $params 
+   * @return  array 
+   */
   public function list($params = [])
   {
     return $this->getDao(self::TABLE)
@@ -18,6 +23,11 @@ class Import extends Service
       ->find("imports/read");
   }
 
+  /**
+   * Find the first record of importations, filtered by $params
+   * @param   array  $params 
+   * @return  object 
+   */
   public function get($params = [])
   {
     return $this->getDao(self::TABLE)
@@ -25,6 +35,11 @@ class Import extends Service
       ->first("imports/read");
   }
 
+  /**
+   * Create a record importation
+   * @param   array  $data 
+   * @return  object 
+   */
   public function create($data)
   {
     // Removes forbidden fields from $data
@@ -41,23 +56,36 @@ class Import extends Service
       $loggedUser = $this->getService('iam/session')->getLoggedUser();
 
     // Validation
-    if (empty($_FILES['file_document'])) throw new BadRequest("Não há arquivo.");
-    if (!in_array($data['ds_type_tag'], $this->getTypeTags())) throw new BadRequest("Tipo de importação inválido.");
+    if (!isset($_FILES['file']) && !isset($data['id_fmn_file']))
+      throw new BadRequest("Arquivo não enviado.");
+
+    if (!in_array($data['ds_type_tag'], $this->getTypeTags()))
+      throw new BadRequest("Tipo de importação inválido.");
 
     // Set default values
     $data['ds_key'] = 'imp-' . uniqid();
     $data['id_iam_user_created'] = empty($loggedUser) ? null : $loggedUser->id_iam_user;
 
     $file = $this->getService('filemanager/file')
-      ->create($_FILES['file_document']['name'], $_FILES['file_document']['tmp_name'], 'Y');
+      ->create($_FILES['file']['name'], $_FILES['file']['tmp_name'], 'Y');
 
-    if (!empty($file)) {
-      $data['id_fmn_file'] = $file->id_fmn_file;
+    if (!empty($_FILES['file'])) {
+      $file = $this->getService('filemanager/file')
+        ->create($_FILES['file']['name'], $_FILES['file']['tmp_name'], 'Y');
+
+      if (!empty($file)) {
+        $data['id_fmn_file'] = $file->id_fmn_file;
+      }
     }
 
     return $this->getDao(self::TABLE)->insert($data);
   }
 
+  /**
+   * Cancel importations, filtered by $params
+   * @param   array  $params 
+   * @return  int    Number of affected rows
+   */
   public function cancel($params)
   {
     // Set refs
@@ -82,6 +110,11 @@ class Import extends Service
     return $count;
   }
 
+  /**
+   * Remove importations, filtered by $params
+   * @param   array  $params 
+   * @return  int    Number of affected rows
+   */
   public function remove($params)
   {
     $records = $this->list($params);
@@ -93,6 +126,10 @@ class Import extends Service
     return $count;
   }
 
+  /**
+   * Process all pending importations
+   * @return  void
+   */
   public function import()
   {
     $target = $this->list(['do_status' => 'P']); // P=pending
@@ -101,12 +138,10 @@ class Import extends Service
       $this->getDao(self::TABLE)
         ->filter('id_fmn_file_import', $import->id_fmn_file_import)
         ->update(['do_status' => 'R']); // R=Running
+
       Dao::flush();
 
       try {
-        // Validations:
-        if (!in_array($import->ds_type_tag, $this->getTypeTags())) throw new BadRequest("Tipo de importação inválido.");
-
         $this->getService($import->ds_servicepath)->{$import->ds_servicemethod}($import);
         $this->getDao(self::TABLE)
           ->filter('id_fmn_file_import', $import->id_fmn_file_import)
@@ -123,11 +158,22 @@ class Import extends Service
     }
   }
 
-  private function getTypeTags()
+  /**
+   * Get all valid importation types
+   * @return  array
+   */
+  public function getTypes()
   {
-    $types = $this->getDao('FMN_IMPORT_TYPE')
+    return $this->getDao('FMN_IMPORT_TYPE')
       ->find();
+  }
 
-    return array_map(fn($t) => $t->ds_tag, $types);
+  /**
+   * Get all valid importation type tags
+   * @return  array
+   */
+  public function getTypeTags()
+  {
+    return array_map(fn($t) => $t->ds_tag, $this->getTypes());
   }
 }

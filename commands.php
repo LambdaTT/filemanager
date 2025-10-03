@@ -155,5 +155,35 @@ class Commands extends Cli
 
       Utils::printLn(''); // trailing newline
     });
+
+    $this->addCommand('import:file', function ($args) {
+      Utils::printLn("Welcome to the File Import Command!");
+      Utils::printLn();
+      if ($isExternal = in_array('--external-storage', $args)) {
+        unset($args['--external-storage']);
+      }
+
+      $filePath = readline("  >> Please, enter the absolute path of the file you want to import: ");
+      $fileName = basename($filePath);
+      $file = $this->getService('filemanager/file')->add($fileName, $filePath, $isExternal ? 'Y' : 'N');
+
+      $importType = readline("  >> Please, enter the import type tag: ");
+      $extraData = array_flip(array_filter(array_flip($args), fn($a) => !is_numeric($a)));
+
+      $this->getService('filemanager/import')->create([
+        'ds_type_tag' => $importType,
+        'id_fmn_file' => $file->id_fmn_file,
+        'tx_extradata' => json_encode($extraData),
+      ]);
+
+      Utils::printLn("  >> File imported successfully!");
+    });
+
+    $this->addCommand('import:process', function () {
+      Utils::printLn("Welcome to the Import Processing Command!");
+      Utils::printLn();
+      $this->getService('filemanager/import')->import();
+      Utils::printLn("  >> All pending importations have been processed!");
+    });
   }
 }
