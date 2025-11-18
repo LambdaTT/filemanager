@@ -13,6 +13,7 @@ SELECT
     fle.ds_url as fileUrl,
     fle.ds_content_type as fileMimeType,
     typ.ds_title as importType,
+    typ.ds_tag as importTypeTag,
     typ.ds_servicepath,
     typ.ds_servicemethod
   FROM `FMN_FILE_IMPORT` imp
