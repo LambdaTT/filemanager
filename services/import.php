@@ -20,7 +20,7 @@ class Import extends Service
   {
     return $this->getDao(self::TABLE)
       ->bindParams($params)
-      ->find("imports/read");
+      ->find("filemanager/imports/read");
   }
 
   /**
@@ -32,7 +32,7 @@ class Import extends Service
   {
     return $this->getDao(self::TABLE)
       ->bindParams($params)
-      ->first("imports/read");
+      ->first("filemanager/imports/read");
   }
 
   /**
@@ -56,27 +56,17 @@ class Import extends Service
       $loggedUser = $this->getService('iam/session')->getLoggedUser();
 
     // Validation
-    if (!isset($_FILES['file']) && !isset($data['id_fmn_file']))
-      throw new BadRequest("Arquivo não enviado.");
-
-    if (!in_array($data['ds_type_tag'], $this->getTypeTags()))
-      throw new BadRequest("Tipo de importação inválido.");
+    $this->checkForFile($data);
+    $this->setType($data);
 
     // Set default values
     $data['ds_key'] = 'imp-' . uniqid();
     $data['id_iam_user_created'] = empty($loggedUser) ? null : $loggedUser->id_iam_user;
 
     $file = $this->getService('filemanager/file')
-      ->create($_FILES['file']['name'], $_FILES['file']['tmp_name'], 'Y');
+      ->add($_FILES['file']['name'], $_FILES['file']['tmp_name'], 'Y');
 
-    if (!empty($_FILES['file'])) {
-      $file = $this->getService('filemanager/file')
-        ->create($_FILES['file']['name'], $_FILES['file']['tmp_name'], 'Y');
-
-      if (!empty($file)) {
-        $data['id_fmn_file'] = $file->id_fmn_file;
-      }
-    }
+    if (!empty($file)) $data['id_fmn_file'] = $file->id_fmn_file;
 
     return $this->getDao(self::TABLE)->insert($data);
   }
@@ -162,9 +152,10 @@ class Import extends Service
    * Get all valid importation types
    * @return  array
    */
-  public function getTypes()
+  public function getTypes($params = [])
   {
     return $this->getDao('FMN_IMPORT_TYPE')
+      ->bindParams(($params))
       ->find();
   }
 
@@ -175,5 +166,22 @@ class Import extends Service
   public function getTypeTags()
   {
     return array_map(fn($t) => $t->ds_tag, $this->getTypes());
+  }
+
+  private function checkForFile($data)
+  {
+    if (empty($_FILES['file']) && empty('id_fmn_file'))
+      throw new BadRequest("Nenhum arquivo foi enviado.");
+  }
+
+  private function setType(&$data)
+  {
+    $tag = $data['ds_type_tag'];
+
+    if (!in_array($tag, $this->getTypeTags()))
+      throw new BadRequest("Tipo de importação inválido.");
+
+    $type = array_map(fn($type) => $type->id_fmn_import_type, array_filter($this->getTypes(), fn($type) => $type->ds_tag == $tag))[0] ?? null;
+    $data['id_fmn_import_type'] = $type;
   }
 }
