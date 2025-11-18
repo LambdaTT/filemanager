@@ -20,4 +20,4 @@ SELECT
   FROM `FMN_FILE_IMPORT` imp
   LEFT JOIN `IAM_USER` usrc ON usrc.id_iam_user = imp.id_iam_user_created
   JOIN `FMN_FILE` fle ON fle.id_fmn_file = imp.id_fmn_file
-  JOIN `FMN_IMPORT_TYPE` typ ON typ.id_fmn_type = imp.id_fmn_type
+  JOIN `FMN_IMPORT_TYPE` typ ON typ.id_fmn_import_type = imp.id_fmn_import_type
