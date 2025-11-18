@@ -53,7 +53,6 @@ class File extends Service
     // Set default values
     $data = [];
     $data['ds_key'] = "fle-" . uniqid();
-    $data['id_iam_user_created'] = empty($loggedUser) ? null : $loggedUser->id_iam_user;
     $data['ds_filename'] = $name;
     $data['do_external_storage'] = $external;
     $data['ds_content_type'] = $this->findMimeType($filepath);
