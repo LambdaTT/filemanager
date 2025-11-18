@@ -13,6 +13,20 @@ class Routes extends WebService
     /////////////////
     // IMPORT ENTITY:
     /////////////////
+    $this->addEndpoint('GET', '/v1/import/on-context/?context?', function (Request $req, $context = null) {
+      $this->auth();
+
+      $params = $req->getBody();
+      if (!empty($context))
+        $params['ds_context'] = $context;
+
+      $imports = $this->getService('filemanager/import')->list($params);
+
+      return $this->response
+        ->withStatus(200)
+        ->withData($imports);
+    });
+
     $this->addEndpoint('GET', '/v1/import/?key?', function ($key) {
       $this->auth();
 
@@ -28,12 +42,10 @@ class Routes extends WebService
         ->withData($import);
     });
 
-    $this->addEndpoint('GET', '/v1/import/?context?', function (Request $req, $context = null) {
+    $this->addEndpoint('GET', '/v1/import', function (Request $req) {
       $this->auth();
 
       $params = $req->getBody();
-      if (!empty($context))
-        $params['ds_context'] = $context;
 
       $imports = $this->getService('filemanager/import')->list($params);
 
@@ -82,6 +94,23 @@ class Routes extends WebService
 
       return $this->response
         ->withStatus(204);
+    });
+
+    ///////////////
+    // IMPORT TYPE:
+    ///////////////
+    $this->addEndpoint('GET', '/v1/import-type/?context?', function (Request $req, $context = null) {
+      $this->auth();
+
+      $params = $req->getBody();
+      if (!empty($context))
+        $params['ds_context'] = $context;
+
+      $importTypes = $this->getService('filemanager/import')->getTypes($params);
+
+      return $this->response
+        ->withStatus(200)
+        ->withData($importTypes);
     });
   }
 
