@@ -13,9 +13,9 @@ class CreateTableFileImport extends Migration
       ->id('id_fmn_file_import')
       ->string('ds_key', 17)
       ->datetime('dt_created')->setDefaultValue(DbVocab::SQL_CURTIMESTAMP())
-      ->int('id_iam_user_created')->nullable()->setDefaultValue(null)
+      ->fk('id_iam_user_created')->nullable()->setDefaultValue(null)
       ->string('ds_type_tag', 20)
-      ->int('id_fmn_file')
+      ->fk('id_fmn_file')
       ->text('tx_extradata')->nullable()->setDefaultValue(null)
       ->string('do_status', 1)->setDefaultValue('P') // P=pending, R=Running, D=Done, F=Failed, C=Cancelled
       ->string('ds_failreason', 255)->nullable()->setDefaultValue(null)
