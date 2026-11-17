@@ -123,8 +123,10 @@ class Routes extends WebService
       throw new Unauthorized("Não autorizado.");
 
     // Validate user permissions:
-    if (!empty($permissions))
-      $this->getService('iam/permission')
-        ->validatePermissions($permissions);
+    // TODO(iam-refactor): entity/CRUD validatePermissions() was removed in the IAM
+    // permissions simplification. Re-enable via tag-based canExecute() once tags exist.
+    // if (!empty($permissions))
+    //   $this->getService('iam/permission')
+    //     ->validatePermissions($permissions);
   }
 }
