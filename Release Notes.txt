@@ -1,8 +1,8 @@
 🧩 LambdaTT File Manager - Release Notes
 ---
 
-📦 Version: 0.4.4
-📅 Release Date: 2026-11-17
+📦 Version: 0.4.5
+📅 Release Date: 2026-11-22
 📄 License: MIT
 👤 Authors:
   - Gabriel Valentoni Guelfi (https://github.com/gabriel-guelfi)
@@ -11,16 +11,18 @@
 
 💬 Commentaries:
 
-Hotfix aligning this module with the IAM permissions-domain simplification (IAM v1.3.0).
+Housekeeping pass aligning this module's plumbing with the IAM permissions-domain simplification
+(IAM v1.3.0). No change to who can access the endpoints.
 
 ---
 
-🔧 Fixed:
+🔧 Changed:
 
-    ▸ Disabled the entity/CRUD `iam/permission->validatePermissions()` call in the route auth
-      guard (commented out, kept as reference with a TODO). It referenced a method removed in the
-      IAM refactor and would otherwise throw an "undefined method" fatal on every guarded endpoint.
-      Authorization currently falls back to authentication only; reintroduce a tag-based
-      `requireAny()` check in a follow-up.
+    ▸ Module presence is now checked via `ModsManager::modExists('iam')` instead of the
+      `modcontrol/control` service, and the auth guard is wired to the tag-based
+      `iam/permission->requireAny()` helper.
+
+    ▸ Removed the disabled `validatePermissions()` reference and its TODO. The import endpoints
+      remain authentication-only — they enforce a valid session but no entity-level permission.
 
 ---
