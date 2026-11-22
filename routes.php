@@ -5,6 +5,7 @@ namespace Filemanager\Routes;
 use SplitPHP\WebService;
 use SplitPHP\Request;
 use SplitPHP\Exceptions\Unauthorized;
+use SplitPHP\ModsManager;
 
 class Routes extends WebService
 {
@@ -114,19 +115,16 @@ class Routes extends WebService
     });
   }
 
-  private function auth(array $permissions = [])
+  private function auth(array|string $permissions = [])
   {
-    if (!$this->getService('modcontrol/control')->moduleExists('iam')) return;
+    if (!ModsManager::modExists('iam')) return;
 
     // Auth user login:
     if (!$this->getService('iam/session')->authenticate())
       throw new Unauthorized("Não autorizado.");
 
     // Validate user permissions:
-    // TODO(iam-refactor): entity/CRUD validatePermissions() was removed in the IAM
-    // permissions simplification. Re-enable via tag-based requireAny() once tags exist.
-    // if (!empty($permissions))
-    //   $this->getService('iam/permission')
-    //     ->validatePermissions($permissions);
+    if (!empty($permissions))
+      $this->getService('iam/permission')->requireAny($permissions);
   }
 }
