@@ -5,6 +5,7 @@ namespace Filemanager\Services;
 use SplitPHP\Database\Dao;
 use SplitPHP\Service;
 use SplitPHP\Exceptions\BadRequest;
+use SplitPHP\ModsManager;
 use Throwable;
 
 class Import extends Service
@@ -52,7 +53,7 @@ class Import extends Service
 
     // Set refs
     $loggedUser = null;
-    if ($this->getService('modcontrol/control')->moduleExists('iam'))
+    if (ModsManager::modExists('iam'))
       $loggedUser = $this->getService('iam/session')->getLoggedUser();
 
     // Validation
@@ -81,7 +82,7 @@ class Import extends Service
     // Set refs
     $target = $this->list($params);
     $loggedUser = null;
-    if ($this->getService('modcontrol/control')->moduleExists('iam'))
+    if (ModsManager::modExists('iam'))
       $loggedUser = $this->getService('iam/session')->getLoggedUser();
 
     // Set default values:
